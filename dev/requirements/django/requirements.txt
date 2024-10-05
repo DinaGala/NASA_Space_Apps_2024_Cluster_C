@@ -1,0 +1,12 @@
+Django==4.1               # Install Django
+requests==2.28.1          # Install requests
+pyproj==3.4.1             # Install pyproj
+pytz==2022.1              # Install pytz
+numpy==1.23.1             # Install numpy
+earthengine-api==0.1.294  # Install Google Earth Engine API
+geopandas==0.11.1         # Install GeoPandas
+timezonefinder==6.0.0     # Install timezonefinder
+celery==5.2.7             # Install Celery
+redis==4.3.3              # Install Redis
+gunicorn==20.0.4
+psycopg2==2.9.3  # For PostgreSQL database connection

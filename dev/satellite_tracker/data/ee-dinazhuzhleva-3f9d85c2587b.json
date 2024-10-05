@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "ee-dinazhuzhleva",
+  "private_key_id": "3f9d85c2587be170f7772677777dab6a0a53cbf3",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDXnhXY8heFUu1n\n2bzRvCWsUpZlEkRFeKUZGmioWjDDDm+knRJ21kryRWe0gOkwcNQxmuVL2ueP2frW\nQ0Va/nN6a8vgcppnVprKzQQCCLSXWe9LXHkx1+7YsEQ6uuq7O7kLFI1YIUOJMJpw\nrPuKUlwXSkyLMjtTX78gxClcS7nmzWXr4oCZrSrWwUThpRdHFR0hK6eLLKvksifP\nquvrUfUFB02omxAkWo+lAUuHWPpQdwu6U5z+ErIjOkO3eXu5a9UyTFgU6jJLMkZh\net2drxyzawkuUCbqGWnE/UAI9u7Lf/C6if8Q8EOSZpYCWVipf7ItrqatTXvzOgL8\nX6MUkBzNAgMBAAECggEADzsqFOypD7B3d8YQSgqN6LneyN3896FZnEfay8WvOyAq\nb8jutHlXyvxvIneWwWa+/pAQEYcxo15FE1ymKhLeam/x83V1Bca+4YOQ/GnMBAME\n3eB26Tf1NdZhw3pPuZEy9Z7qiyayZB8MUdhOXouJ2NVVSeHvAek6EaD5wPzScYTA\nozFtnQb73P4ri9Ut/OegUSSt0GFHpwAd6AXp1E91bFmeYysZc7eOqAWnlWRHJ8Fl\nkGxYNj87tjPJsv20DHMmTYNHiEPvXSwK43B6RxJPzkBOxDvjW+gep6Q6o9/TH7xW\n6dah+aB3Qkzvq9Tvwx7Mu/URFV595xhcV1gRWzdtkQKBgQD6a4MC8o53kjHldK+Y\nVuXrcksMu7ODTc4zzT6ip54ZK8V1uATvn+xf2mMTblSl+TyNauRs84b5C7cl7GOP\n5shb66unaeS9405SZo+g+PBbjj/0w0GHmvn82yGl3ojdtkdrbSZKgMqZimEwRZt6\nEqrvoK+ZKhkk6bxo+Gk2YdKGtQKBgQDcbAwrCm3PONXKwgyl1ds9eWekydPmaQ/B\nBHOJz92tr49+7CnR8xuiaz1/dObFM4Del+EQw+8RPV0Flc/UUBkFuQGRpMZFJez2\nlIPmw4NmO4elmX+eIataPHN9LyHW0taNiCP8Nt9cEyAGVYztC91sDRqk3Y51wANl\nxo9ImdA0uQKBgQCxgrSDylyi9cbY2DYAzth8ZbA9fnBpiyW4Iq1br2WqghSetasK\nEVsFN1Ez3Om0HVCHDlaNxLLQpzVUdJS+1OECB7TOH4o98Hr8fich/FSlEdjUL/Sr\no3fBfbQEWBK81xEZXW3fMhxramQqS61CgykYY9cVw3m/aNBduHkcS4toYQKBgA4l\naQqCGtYHwcDHf2RNO0rQtdQfl9fbukUa8gdQLdvtvnnY0j5FKerckw/RAtZ5HbYr\nbShUSs2CcKvhF3t6wIBbhTxBpO/fJTwV//kZZx9yhpwcI9KUOpkJ9Cd+lN9inJ5s\ntFKFewQ/vfhqGSdFcapzlNgr1+66qf0oJx3zsScRAoGBAJMAZGPbk/33FHz78sCa\naAqE/5awgUB+TfSL9kc3AMtwEnClGZIt27LO7/PdcjZ795vGjxZTWUCDgUcSIgpM\n6ZmcII8lfpmw8R5ltfvFcq3v1cm8TYnYZcTYZmRG7ytiXHCN15I6tP0uS7VCcYEh\nKPOV/Mgs+UWwmS3U2iBKsRfE\n-----END PRIVATE KEY-----\n",
+  "client_email": "nasa2024@ee-dinazhuzhleva.iam.gserviceaccount.com",
+  "client_id": "110810921282342274978",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/nasa2024%40ee-dinazhuzhleva.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

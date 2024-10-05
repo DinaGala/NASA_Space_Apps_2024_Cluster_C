@@ -77,7 +77,7 @@ def solicitar_informacion_sin_registro(request):
 		
 		solicitud = UsuarioNoRegistrados.objects.create(email=email, latitud=latitud, longitud=longitud)
 		return JsonResponse({"status": "Solicitud recibida"})
-	return render(request, 'solicitar_informacion.html')
+	return JsonResponse({"error": "Método no permitido. Usa POST."}, status=405)
 
 
 def solicitar_informacion_con_registro(request):
@@ -91,7 +91,7 @@ def solicitar_informacion_con_registro(request):
 
 		usuario = Usuario.objects.create(nombre=nombre, apellidos=apellidos, password=hashed_password, email=email)
 		return JsonResponse({"status": "Solicitud recibida"})
-	return render(request, 'solicitar_informacion.html')
+	return JsonResponse({"error": "Método no permitido. Usa POST."}, status=405)
 
 
 @login_required 
@@ -108,9 +108,7 @@ def registrar_ubicacion(request):
 			return JsonResponse({"status": "Esta ubicación ya existe para el usuario"}, status=400)
 		ubicacion = Ubicacion.objects.create(usuario=usuario, latitud=latitud, longitud=longitud)
 		return JsonResponse({"status": "Ubicación registrada exitosamente"})
-
-		
-	return render(request, 'registrar_ubicacion.html')
+	return JsonResponse({"error": "Método no permitido. Usa POST."}, status=405)
 
 
 @csrf_exempt
@@ -125,7 +123,6 @@ def login_view(request):
 		else:
 			return JsonResponse({'status': 'Invalid credentials'}, status=400)
 	return JsonResponse({'status': 'Invalid method'}, status=405)
-
 
 
 @login_required
@@ -162,7 +159,7 @@ def registrar_medicion(request):
 			return JsonResponse({"status": "Ubicación no encontrada"}, status=400)
 
 	ubicaciones = Ubicacion.objects.filter(usuario=request.user)
-	return render(request, 'registrar_medicion.html', {'ubicaciones': ubicaciones})
+	return JsonResponse({"error": "Método no permitido. Usa POST."}, status=405)
 
 
 def buscar_medicion_usuario_fecha(request):

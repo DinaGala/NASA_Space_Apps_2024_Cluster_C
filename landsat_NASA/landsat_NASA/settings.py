@@ -133,3 +133,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'landsat.clusterc@gmail.com'
 EMAIL_HOST_PASSWORD = 'punihtpyfpzyjosj'
+
+
+AUTH_USER_MODEL = 'app_back.Usuario'

@@ -1,0 +1,21 @@
+services:
+  nasa-web-app:
+    build: 
+      context: ./requirements/nasa-web-app
+    ports:
+      - "3000:3000"
+    restart: always
+    # volumes
+    #   - ./configs:/home/configs
+    #   - api-media:/home/api/media
+    #   - api-static:/home/api/static
+    #   - api-db:/home/api/db
+    #   - api-db-backup:/home/api/db-backup
+    # env_file:
+    #   - ./envs/env
+    environment:
+      - SMART_AGRIC_VERSION=v1.0.0
+    # command: /home/scripts/install.sh
+  # nginx:
+  #   image: nginx
+  #   restart: always

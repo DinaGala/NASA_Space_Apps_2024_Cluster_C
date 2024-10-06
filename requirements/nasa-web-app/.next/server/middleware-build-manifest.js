@@ -24,15 +24,25 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/activedashboard": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/activedashboard.js"
+    ],
+    "/addsensor": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/addsensor.js"
+    ],
     "/historical-data": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/historical-data.js"
     ],
-    "/registration": [
+    "/onboarding": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/registration.js"
+      "static/chunks/pages/onboarding.js"
     ]
   },
   "ampFirstPages": []

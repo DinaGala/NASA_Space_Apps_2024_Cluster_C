@@ -19,7 +19,7 @@ const LandingPage = () => {
         <section className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Revolutionize Your Farming with Satellite and IoT Insights</h2>
           <p className="text-xl mb-6">Harness the power of Landsat data and local IoT sensors for smarter agricultural decisions.</p>
-          <Link href="/registration">
+          <Link href="/onboarding">
           <button className="bg-green-500 text-white px-6 py-2 rounded-full text-lg">Get Started</button>
 </Link>
 

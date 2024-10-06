@@ -19,6 +19,9 @@ services:
   # nginx:
   #   image: nginx
   #   restart: always
+  depends_on:
+      - djanjo
+    command: sh -c "npm install && npm run dev"
   django:
     build:
       context: ./requirements/django/

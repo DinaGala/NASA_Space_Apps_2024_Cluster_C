@@ -21,6 +21,10 @@ from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.shortcuts import render
 
+from datetime import datetime, timedelta
+from PIL import Image
+import numpy as np
+import requests
 import requests
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -32,6 +36,8 @@ from shapely.geometry import Point
 import pytz
 import os
 import ee
+import io
+import math
 import geopandas as gpd
 from django.conf import settings
 from requests.auth import HTTPBasicAuth
@@ -130,8 +136,8 @@ def solicitar_informacion_con_registro(request):
 		password = request.POST.get('password')
 		email = request.POST.get('email')
 		hashed_password = make_password(password)
-		longitud = request.POST.get('longitud')
-		latitud = request.POST.get('latitud')
+		longitud = float(request.POST.get('longitud'))
+		latitud = float(request.POST.get('latitud'))
 		path, row = get_wrs2_path_row(latitud, longitud)
 		next_image_time_utc = get_new_image_time(path, row)
 		next_image_time_user = get_timezone_from_coords(next_image_time_utc, latitud, longitud)
@@ -144,8 +150,15 @@ def solicitar_informacion_con_registro(request):
 			latitud=latitud
 		)
 		enviar_notificacion_solicitud(email, next_image_time_utc, next_image_time_user)
+
+		imagen = get_image(next_image_time_utc, path, row)
+		
+		imagen_buena = imagenDatos(returnGrid(latitud, longitud, imagen))
+		print(imagen_buena)
+		diccionary = retornarJSONInfo(longitud, latitud, imagen)
+		print(diccionary)
 		#Enviar escena y devuelve un JPG
-		# Funcio que retorna un JSON de 3 indices, NDVI, Clour Cover y temperatura, 
+		# Funcio que retorna un JSON de 3 indices, NDVI, Clour Cover, temperatura, NDWI
 		return JsonResponse({"status": "Solicitud recibida"})
 	return JsonResponse({"error": "Método no permitido. Usa POST."}, status=405)
 
@@ -316,3 +329,172 @@ def get_timezone_from_coords(next_image_utc, latitude, longitude):
 
 				# Отправка датасета через 12 часов
 				# download_and_send_dataset.apply_async(args=[user_email], eta=next_image + timedelta(hours=24))
+
+
+def get_image(date, path, row):
+    # Set date range for the Landsat scene
+    start_date = date.strftime('%Y-%m-%d')
+    end_date = (date + timedelta(days=1)).strftime('%Y-%m-%d')
+
+    # Filter the Landsat collection for the given path, row, and date
+    landsat_collection_8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR') \
+        .filter(ee.Filter.eq('WRS_PATH', int(path))) \
+        .filter(ee.Filter.eq('WRS_ROW', int(row))) \
+        .filterDate(start_date, end_date)
+    
+    # Get the first image (Landsat scene)
+    last_image = landsat_collection_8.first()
+
+    return last_image
+
+
+
+# Función para calcular las nuevas coordenadas
+def new_position(lat, lon, distance_km, bearing_deg):
+    # Convertir grados a radianes
+    lat = math.radians(lat)
+    lon = math.radians(lon)
+    bearing = math.radians(bearing_deg)
+    
+    # Radio de la Tierra en kilómetros
+    R = 6371.0
+    
+    # Fórmulas para calcular la nueva latitud
+    new_lat = math.asin(math.sin(lat) * math.cos(distance_km / R) +
+                        math.cos(lat) * math.sin(distance_km / R) * math.cos(bearing))
+    
+    # Fórmulas para calcular la nueva longitud
+    new_lon = lon + math.atan2(math.sin(bearing) * math.sin(distance_km / R) * math.cos(lat),
+                               math.cos(distance_km / R) - math.sin(lat) * math.sin(new_lat))
+    
+    # Convertir de radianes a grados
+    new_lat = math.degrees(new_lat)
+    new_lon = math.degrees(new_lon)
+    
+    return new_lat, new_lon
+
+
+# Dada la latidud, la longitud y una escena retorna una matriz 3x3 de todos los datos de landsat alrededor de esa escena
+def returnGrid(lon:float, lat:float, scene):
+    LatSup, LonSup = new_position(lat, lon, 0.03, 45)
+    LatInf, LonInf = new_position(lat, lon, -0.03, 45)
+    region = ee.Geometry.BBox(LonInf, LatInf, LonSup, LatSup)
+    import numpy
+    url = scene.getDownloadUrl({
+        'region': region,
+        'scale': 20,
+        'format': 'NPY'
+    })
+    response = requests.get(url)
+    data = numpy.load(io.BytesIO(response.content))
+    return data
+
+
+
+
+# Dada una escena, retorna una imagen 3x3 con los píxeles RGB
+def imagenDatos(data):
+    print(data)
+    band_blue_normalized = []
+    band_green_normalized = []
+    band_red_normalized = []
+
+    for i in range(len(data)):
+        listR = []
+        listG = []
+        listB = []
+        for j in range(len(data[i])):
+            listR.append((float(data[i][j][3])/20000) * 255)
+            listG.append((float(data[i][j][2])/20000) * 255)
+            listB.append((float(data[i][j][1])/20000) * 255)
+        band_blue_normalized.append(listB)
+        band_green_normalized.append(listG)
+        band_red_normalized.append(listR)
+
+
+    # Crear una imagen RGB combinando las bandas normalizadas
+    rgb_image = np.dstack((band_red_normalized, band_green_normalized, band_blue_normalized))
+    print(rgb_image)
+    matriz255 = rgb_image.astype(np.uint8)
+    imagen  = Image.fromarray(matriz255)
+    #imagen.save('imagen_convertida.jpeg')
+    return imagen
+
+
+
+# Dada la radiancia y la emisividad retorna la temperatura (no funciona bien, hay que buscar una fórmula que funcione de verdad)
+def calcularTemp(radiance:float, emis:float):
+    K1 = 774.89
+    K2 = 1321.08
+    temperature = K2/(math.log(K1/radiance+(1)))
+    LST = temperature/(emis**0.25)
+    return LST
+
+# Dadao el vector de adote
+def calcularTempFromData(data):
+    radiance = data[15]/65535      # Transmitancia atmosférica   
+    emis = data[12]/65535     # Emisividad superficial
+    return calcularTemp(radiance, emis)
+
+# Calcula indice vegetacion mediante dato como arg
+def por_vegetacionPre(data):
+    nir = data[4]  # Banda 5: NIR
+    red = data[3]  # Banda 4: Red
+    return por_vegetacion(nir, red)
+    
+# Calcula indice vegetacion mediante nir y red como arg
+def por_vegetacion(nir, red):
+    nvdi = (nir - red)/(nir + red)
+    return nvdi
+# Calcula indice vegetacion mediante lon, lat, scene como arg
+def calcularVegFromScene(lon, lat, scene):
+
+    data = returnGrid(lon, lat, scene)[1][1]
+    return por_vegetacionPre(data)
+# Calcula indice temperatura mediante dato como arg    
+
+def calcularTempFromScene(lon, lat, scene):
+    data = returnGrid(lon, lat, scene)[1][1]
+    return calcularTempFromData(data) -271 + 30
+
+# Calcula indice humedad mediante nir, green como arg (si>0 hay humedad)    return calcularTemp(radiance, emis)-273 + 40
+def humedadPre(nir, green):
+    ndwi = (green-nir)/(green+nir)
+    return ndwi
+
+def humedad(data):
+    nir = data[4]  # Banda 5: NIR
+    green = data[2]  # Banda 3: GREEN
+    return humedadPre(nir, green)
+
+def calcularHumFromScene(lon, lat, scene):
+    data = returnGrid(lon, lat, scene)[1][1]
+    return humedad(data)
+
+def calcularCloud(lon, lat, scene):
+    data = returnGrid(lon, lat, scene)
+    cloud = 0
+    for i in range(3):
+        for j in range(3):
+            binario = bin(data[i][j][17])[2:]  # [2:] elimina el prefijo '0b'
+            
+            # Asegurarse de que la representación binaria tenga al menos 4 bits
+            while len(binario) < 4:
+                binario = '0' + binario  # Agregar ceros a la izquierda si es necesario
+            
+            # Obtener el cuarto bit (contando desde 0, así que el cuarto bit es el índice 3)
+            cuarto_bit = binario[-4]  # El cuarto bit desde la derecha
+
+            # Convertir el bit a decimal
+            cuarto_bit_decimal = int(cuarto_bit)
+            cloud = cloud + cuarto_bit_decimal
+    return cloud/9
+
+def retornarJSONInfo(lon, lat, scene):
+    dic = {
+    "temp" : calcularTempFromScene(lon,lat, scene),
+    "nvdi":calcularVegFromScene(lon, lat, scene),
+    "ndwi": calcularHumFromScene(lon, lat, scene),
+    "cloud": calcularCloud(lon,lat,scene) #Hay que multiplicar por 100 para conseguir el %
+    }
+    return dic

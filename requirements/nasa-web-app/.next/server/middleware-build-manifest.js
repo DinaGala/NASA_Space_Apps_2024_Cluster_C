@@ -29,16 +29,6 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/activedashboard.js"
     ],
-    "/addsensor": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/addsensor.js"
-    ],
-    "/historical-data": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/historical-data.js"
-    ],
     "/onboarding": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",

@@ -136,3 +136,4 @@ EMAIL_HOST_PASSWORD = 'punihtpyfpzyjosj'
 
 
 AUTH_USER_MODEL = 'app_back.Usuario'
+LOGIN_URL = 'app_back.login_view'

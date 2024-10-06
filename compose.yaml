@@ -19,3 +19,84 @@ services:
   # nginx:
   #   image: nginx
   #   restart: always
+  django:
+    build:
+      context: ./requirements/django/
+      dockerfile: Dockerfile
+    container_name: django
+    command: gunicorn --bind 0.0.0.0:8000 app_name.wsgi:application
+    volumes:
+      - ./django:/app
+      - ./static:/app/static
+      - ./media:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=mysecretkey
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=mydb
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  celery:
+    build:
+      context: ./requirements/
+    container_name: celery_worker
+    command: celery -A satellite_tracker worker -l info
+    volumes:
+      - ./django:/app
+    depends_on:
+      - django
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+
+  celery_beat:
+    build:
+      context: ./requirements/
+    container_name: celery_beat
+    command: celery -A satellite_tracker beat -l info
+    volumes:
+      - ./requirements/django:/app
+    depends_on:
+      - celery
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+
+  db:
+    image: postgres
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend_app
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    ports:
+      - "3000:3000"
+    depends_on:
+      - django
+
+volumes:
+  pgdata:
